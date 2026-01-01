@@ -1,35 +1,61 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>쿠팡 포트폴리오 메인</title>
+	<meta charset="utf-8">
+	<link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+	<style>
+		.container {
+			max-width: 800px;
+		}
+	</style>
 </head>
 <body>
-    <h1>Coupang Portfolio Main</h1>
-    <hr>
-    <h2>상품 목록</h2>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>상품명</th>
-                <th>가격</th>
-                <th>설명</th>
-                <th>재고</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="item : ${items}">
-                <td th:text="${item.name}">상품명</td>
-                <td th:text="${item.price} + '원'">20000원</td>
-                <td th:text="${item.description}">상품설명</td>
-                <td th:text="${item.stockQuantity} + '개'">10개</td>
-            </tr>
-        </tbody>
-    </table>
-	<div style="text-align: right;">
-	    <a th:href="@{/members/new}">회원가입</a> | 
-	    <a th:href="@{/login}">로그인</a>
+	<div class="container" style="margin-top: 50px;">
+		<div class="py-5 text-center">
+			<h2>🛍️ 코팡(Copang)</h2>
+		</div>
+
+		<div class="row mb-4">
+			<div th:if="${member == null}" class="col text-end">
+				<button class="btn btn-secondary" th:onclick="|location.href='@{/login}'|">로그인</button>
+				<button class="btn btn-primary" th:onclick="|location.href='@{/members/new}'|">회원 가입</button>
+			</div>
+
+			<div th:if="${member != null}" class="col text-end">
+				<span th:text="|${member.name}님 환영합니다! |" class="me-2">사용자 이름</span>
+				<button class="btn btn-info" th:onclick="|location.href='@{/items/add}'|">상품 등록</button>
+				<form th:action="@{/logout}" method="post" style="display:inline;">
+					<button class="btn btn-danger" type="submit">로그아웃</button>
+				</form>
+			</div>
+		</div>
+		<hr class="my-4">
+		<div class="row">
+			<h4>📦 판매 중인 상품</h4>
+			<table class="table table-striped">
+				<thead class="table-dark">
+					<tr>
+						<th>ID</th>
+						<th>상품명</th>
+						<th>가격</th>
+						<th>재고</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="item : ${items}">
+						<td th:text="${item.id}">1</td>
+						<td>
+							<a th:href="@{/items/{itemId}(itemId=${item.id})}" th:text="${item.name}">상품명</a>
+						</td>
+						<td th:text="${#numbers.formatInteger(item.price, 0, 'COMMA') + '원'}">10,000원</td>
+						<td th:text="${item.stockQuantity}">10개</td>
+					</tr>
+					<tr th:if="${#lists.isEmpty(items)}">
+						<td colspan="4" class="text-center">등록된 상품이 없습니다.</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
 	</div>
-	<hr>
 </body>
 </html>
