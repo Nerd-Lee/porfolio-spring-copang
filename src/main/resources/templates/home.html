@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>쿠팡 포트폴리오 메인</title>
+</head>
+<body>
+    <h1>Coupang Portfolio Main</h1>
+    <hr>
+    <h2>상품 목록</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>상품명</th>
+                <th>가격</th>
+                <th>설명</th>
+                <th>재고</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="item : ${items}">
+                <td th:text="${item.name}">상품명</td>
+                <td th:text="${item.price} + '원'">20000원</td>
+                <td th:text="${item.description}">상품설명</td>
+                <td th:text="${item.stockQuantity} + '개'">10개</td>
+            </tr>
+        </tbody>
+    </table>
+	<div style="text-align: right;">
+	    <a th:href="@{/members/new}">회원가입</a> | 
+	    <a th:href="@{/login}">로그인</a>
+	</div>
+	<hr>
+</body>
+</html>

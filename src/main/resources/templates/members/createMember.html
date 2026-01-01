@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <h2>회원 가입</h2>
+    <form action="/members/new" th:object="${memberForm}" method="post">
+        <div>
+            <label>이메일(ID)</label>
+            <input type="email" th:field="*{email}" placeholder="이메일을 입력하세요">
+            <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Incorrect date</p>
+        </div>
+        <div>
+            <label>비밀번호</label>
+            <input type="password" th:field="*{password}">
+			<p th:if="${#fields.hasErrors('password')}" th:errors="*{password}" style="color:red;"></p>
+        </div>
+        <div>
+            <label>이름</label>
+            <input type="text" th:field="*{name}">
+        </div>
+        <button type="submit">가입하기</button>
+    </form>
+</body>
+</html>
