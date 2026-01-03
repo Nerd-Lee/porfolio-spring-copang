@@ -1,5 +1,6 @@
 package com.ljm.copang.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Controller;
@@ -24,6 +25,12 @@ public class MainController {
 	public String home(HttpServletRequest request, Model model) {
 		// 물건의 정보를 전부 가져와서, model 객체에 넣어 전달
 		List<Item> items = itemService.findItems();
+		
+		if(items == null) {
+			// 만약 items라는 리스트가 비어있다면, 에러를 막기 위해 빈 값이라도 넣어주자.
+			items = new ArrayList<>();
+		}
+		
 		model.addAttribute("items", items);
 		
 		// 세션 확인
