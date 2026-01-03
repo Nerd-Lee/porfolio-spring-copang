@@ -13,11 +13,12 @@ import lombok.RequiredArgsConstructor;
 public class InitDB implements CommandLineRunner{
 	private final ItemRepository itemRepository;
 	
-	/*
+	
 	public void run(String... args) throws Exception {
 	
-	}*/
+	}
 	
+	/*
 	@Override
 	public void run(String... args) throws Exception {
 		// TODO Auto-generated method stub
@@ -37,4 +38,5 @@ public class InitDB implements CommandLineRunner{
 		item2.setDescription("작은화면으로 고생하는 개발자를 위한 맥북 32인치, 하지만 외부작업은 불가능합니다.");
 		itemRepository.save(item2);
 	}
+	*/
 }

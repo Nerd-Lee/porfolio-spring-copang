@@ -1,0 +1,29 @@
+<div class="container">
+    <h2>상품 수정</h2>
+    <form th:action th:object="${item}" method="post">
+        <div class="mb-3">
+            <label for="name">상품명</label>
+            <input type="text" th:field="*{name}" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="price">가격</label>
+            <input type="number" th:field="*{price}" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="stockQuantity">재고수량</label>
+            <input type="number" th:field="*{stockQuantity}" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="imageUrl">이미지 URL</label>
+            <input type="text" th:field="*{imageUrl}" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="description">상세 설명</label>
+            <textarea th:field="*{description}" class="form-control" rows="5"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">수정 완료</button>
+        <button type="button" class="btn btn-secondary" 
+                th:onclick="|location.href='@{/items/{id}(id=${item.id})}'|">취소</button>
+    </form>
+</div>s

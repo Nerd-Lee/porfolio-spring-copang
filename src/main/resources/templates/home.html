@@ -23,7 +23,7 @@
 
 			<div th:if="${member != null}" class="col text-end">
 				<span th:text="|${member.name}님 환영합니다! |" class="me-2">사용자 이름</span>
-				<button class="btn btn-info" th:onclick="|location.href='@{/items/add}'|">상품 등록</button>
+				<button class="btn btn-info" th:onclick="|location.href='@{/item/add}'|">상품 등록</button>
 				<form th:action="@{/logout}" method="post" style="display:inline;">
 					<button class="btn btn-danger" type="submit">로그아웃</button>
 				</form>

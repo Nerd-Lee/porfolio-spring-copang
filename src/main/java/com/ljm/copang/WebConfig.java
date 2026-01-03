@@ -9,7 +9,8 @@ public class WebConfig implements WebMvcConfigurer {
 	
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
-		String [] patterns = {"/", "/members/new", "/login", "/logout", "/css/**", "/*.ico", "/error"};
+		String [] patterns = {"/", "/members/new", "/login", "/logout",
+							  "/css/**", "/*.ico", "/error", "/items/{itemId}"};
 		
 		registry.addInterceptor(new LoginCheckInterceptor())
 				.order(1).addPathPatterns("/**")
