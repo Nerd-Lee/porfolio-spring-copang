@@ -1,4 +1,11 @@
 <html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<script src="/js/common.js"></script>
+	<script th:inline="javascript">
+		// 타임리프 변수를 안전하게 자바스크립트 인자로 전달
+		checkErrorMessage([[${errorMessage}]]);
+	</script>
+</head>
 <div class="container">
     <h2>내 장바구니</h2>
     
@@ -55,12 +62,4 @@
 		</form>
     </div>
 </div>
-<script th:inline="javascript">
-		/*<![CDATA[*/
-		var errorMessage = [[${errorMessage}]];
-		if (errorMessage) {
-			alert(errorMessage);
-		}
-		    /*]]>*/
-	</script>
 </html>

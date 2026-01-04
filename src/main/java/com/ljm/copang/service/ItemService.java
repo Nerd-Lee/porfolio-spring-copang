@@ -32,4 +32,12 @@ public class ItemService {
 		return itemRepository.findById(itemId).orElseThrow(
 				() -> new IllegalArgumentException("존재하지 않는 상품입니다."));
 	}
+	
+	// 상품명 검색 후 상품명에 맞는 아이템 데이터 반환
+	public List<Item> searchItems(String keyword){
+		if(keyword == null || keyword.isEmpty()) {
+			return itemRepository.findAll();
+		}
+		return itemRepository.findByNameContainingIgnoreCase(keyword);
+	}
 }
