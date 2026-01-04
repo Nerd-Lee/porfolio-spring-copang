@@ -31,7 +31,7 @@
 
 	    <div style="margin-top: 20px;">
 	        <button type="submit" th:formaction="@{/cart/add}">장바구니 담기</button>
-	        <button type="submit" th:formaction="@{/order/{id}(id=${item.id})}">바로 구매하기</button>
+	        <button type="submit" th:formaction="@{/order/form}">바로 구매하기</button>
 	    </div>
 	</form>
 
@@ -44,4 +44,12 @@
         <button th:onclick="|location.href='@{/}'|">목록으로</button>
     </div>
 </div>
+<script th:inline="javascript">
+		/*<![CDATA[*/
+		var errorMessage = [[${errorMessage}]];
+		if (errorMessage) {
+			alert(errorMessage);
+		}
+		    /*]]>*/
+	</script>
 </html>

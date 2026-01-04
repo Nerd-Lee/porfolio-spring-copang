@@ -1,5 +1,7 @@
 package com.ljm.copang.entity;
 
+import com.ljm.copang.exception.NotEnoughStockException;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -45,7 +47,7 @@ public class Item {
 		int restStock = this.stockQuantity - quantity;
 		// 만약에 재고가 부족할 경우라면, 예외를 발생시켜야 한다.
 		if(restStock < 0) {
-			throw new RuntimeException("남은 재고가 부족합니다. (현재 재고: " + this.stockQuantity + ")");
+			throw new NotEnoughStockException("상품의 재고가 부족합니다. (현재 재고: " + this.stockQuantity + "개)");
 		}
 		this.stockQuantity = restStock;
 	}
