@@ -10,6 +10,9 @@
 	</style>
 </head>
 <body>
+	<li class="nav-item" th:if="${session.loginMember != null}">
+	    <a class="nav-link" href="/items/list/my">내 상품 관리</a>
+	</li>
 	<div class="container" style="margin-top: 50px;">
 		<div class="py-5 text-center">
 			<h2>🛍️ 코팡(Copang)</h2>

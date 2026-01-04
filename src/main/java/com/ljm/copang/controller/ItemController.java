@@ -1,5 +1,7 @@
 package com.ljm.copang.controller;
 
+import java.util.List;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -69,6 +71,35 @@ public class ItemController {
 		itemRepository.save(item);
 		
 		return "redirect:/items/{itemId}";
+	}
+	
+	// 상품 삭제 기능
+	@PostMapping("/items/{itemId}/delete")
+	public String itemDelete(@PathVariable Long itemId, HttpServletRequest request) {
+		Item item = itemRepository.findById(itemId)
+					.orElseThrow(()-> new RuntimeException("상품을 찾을 수 없습니다."));
+		
+		Member loginMember = sessionManager.getLoginMember(request);
+		if(loginMember == null || !item.getMember().getId().equals(loginMember.getId())) {
+			return "redirect:/items";
+		}
+		
+		itemRepository.delete(item);
+		
+		return "redirect:/";
+	}
+	
+	@GetMapping("/items/list/my")
+	public String myAddItems(HttpServletRequest request, Model model) {
+		Member loginMember = sessionManager.getLoginMember(request);
+		if(loginMember == null) {
+			return "redirect:/login";
+		}
+		
+		List<Item> items = itemRepository.findByMemberId(loginMember.getId());
+		model.addAttribute("items", items);
+		
+		return "item/my_add_items";
 	}
 	
 	/*

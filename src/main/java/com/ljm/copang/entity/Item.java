@@ -34,4 +34,19 @@ public class Item {
 	@Lob
 	@Column(columnDefinition = "TEXT")
 	private String description;		// 상품 설명
+	
+	// 수량 증가
+	public void addStock(int quantity) {
+		this.stockQuantity += quantity;
+	}
+	
+	// 수량 감소
+	public void removeStock(int quantity) {
+		int restStock = this.stockQuantity - quantity;
+		// 만약에 재고가 부족할 경우라면, 예외를 발생시켜야 한다.
+		if(restStock < 0) {
+			throw new RuntimeException("남은 재고가 부족합니다. (현재 재고: " + this.stockQuantity + ")");
+		}
+		this.stockQuantity = restStock;
+	}
 }

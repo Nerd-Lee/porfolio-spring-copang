@@ -1,9 +1,11 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <div class="container">
     <h2>상품 상세</h2>
-	<div th:if="${item.imageUrl}">
-		<img th:src="${item.imageUrl}" style="max-width: 300px; margin-bottom: 20px;" alt="상품이미지">
-	</div>
+    
+    <div th:if="${item.imageUrl}">
+        <img th:src="${item.imageUrl}" style="max-width: 300px; margin-bottom: 20px;" alt="상품이미지">
+    </div>
+
     <div>
         <label>상품명</label>
         <input type="text" th:value="${item.name}" readonly>
@@ -16,10 +18,30 @@
         <label>상품 설명</label>
         <p th:text="${item.description}">상품 설명이 들어갑니다.</p>
     </div>
-    
-	<div th:if="${session.loginMember != null and item.member != null and session.loginMember.id == item.member.id}">
-	    <button th:onclick="|location.href='@{/items/{id}/edit(id=${item.id})}'|">수정하기</button>
-	</div>
-    <button th:onclick="|location.href='@{/}'|">목록으로</button>
+
+    <hr>
+
+	<form method="post">
+	    <input type="hidden" name="itemId" th:value="${item.id}">
+
+	    <div>
+	        <label for="count">구매 수량</label>
+	        <input type="number" name="count" id="count" value="1" min="1" required>
+	    </div>
+
+	    <div style="margin-top: 20px;">
+	        <button type="submit" th:formaction="@{/cart/add}">장바구니 담기</button>
+	        <button type="submit" th:formaction="@{/order/{id}(id=${item.id})}">바로 구매하기</button>
+	    </div>
+	</form>
+
+    <hr>
+
+    <div style="margin-top: 10px;">
+        <div th:if="${session.loginMember != null and item.member != null and session.loginMember.id == item.member.id}">
+            <button th:onclick="|location.href='@{/items/{id}/edit(id=${item.id})}'|">수정하기</button>
+        </div>
+        <button th:onclick="|location.href='@{/}'|">목록으로</button>
+    </div>
 </div>
 </html>

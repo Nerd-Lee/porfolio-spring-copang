@@ -22,8 +22,26 @@
             <textarea th:field="*{description}" class="form-control" rows="5"></textarea>
         </div>
 
-        <button type="submit" class="btn btn-primary">수정 완료</button>
-        <button type="button" class="btn btn-secondary" 
-                th:onclick="|location.href='@{/items/{id}(id=${item.id})}'|">취소</button>
+		<div class="d-flex justify-content-between">
+			<div>
+				<button type="submit" class="btn btn-primary">수정 완료</button>
+				<button type="button" class="btn btn-secondary"
+						th:onclick="|location.href='@{/items/{id}(id=${item.id})}'|">취소</button>
+			</div>
+					
+			<div>
+				<button type="button" class="btn btn-danger" th:onclick="deleteItem()">상품 삭제</button>
+			</div>
+		</div>
     </form>
-</div>s
+</div>
+
+<form id="deleteForm" th:action="@{/items/{id}/delete(id=${item.id})}" method="post" style="display:none;"></form>
+
+<script>
+    function deleteItem() {
+        if (confirm("정말 이 상품을 삭제하시겠습니까? 삭제된 데이터는 복구할 수 없습니다.")) {
+            document.getElementById('deleteForm').submit();
+        }
+    }
+</script>
