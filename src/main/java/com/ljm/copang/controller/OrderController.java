@@ -13,6 +13,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.ljm.copang.component.SessionManager;
 import com.ljm.copang.dto.OrderFormDto;
+import com.ljm.copang.dto.OrderSearchDto;
 import com.ljm.copang.entity.Item;
 import com.ljm.copang.entity.Member;
 import com.ljm.copang.entity.Order;
@@ -35,13 +36,14 @@ public class OrderController {
 	
 	// 주문 내역 페이지
 	@GetMapping("/orders")
-	public String orderListView(HttpServletRequest request, Model model) {
+	public String orderListView(@ModelAttribute("orderSearchDto") OrderSearchDto searchDto, HttpServletRequest request, Model model) {
 		Member loginMember = sessionManager.getLoginMember(request);
 		if(loginMember == null) {
 			return "redirect:/login";
 		}
 		
-		List<Order> orders = orderRepository.findByMemberId(loginMember.getId());
+		//List<Order> orders = orderRepository.findByMemberId(loginMember.getId());
+		List<Order> orders = orderService.getOrderList(searchDto);
 		
 		model.addAttribute("orders", orders);
 		

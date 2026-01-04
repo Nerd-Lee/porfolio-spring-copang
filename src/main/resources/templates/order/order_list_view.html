@@ -7,7 +7,27 @@
 <body>
 <div class="container">
     <h2>나의 주문 내역</h2>
+	<hr>
+	<form action="/orders" method="get">
+		<select name="sortOrder" th:value="${orderSearchDto.sortOrder}">
+			<option value="desc" th:selected="${orderSearchDto.sortOrder == 'desc'}">최신순</option>
+			<option value="asc" th:selected="${orderSearchDto.sortOrder == 'asc'}">오래된순</option>
+		</select>
+		
+	    <select name="orderStatus" th:value="${orderSearchDto.orderStatus}">
+	        <option value="">전체 상태</option>
+	        <option value="ORDER">주문 완료</option>
+	        <option value="CANCEL">주문 취소</option>
+	    </select>
 
+	    <input type="date" name="startDate" th:value="${orderSearchDto.startDate}">
+	    ~
+	    <input type="date" name="endDate" th:value="${orderSearchDto.endDate}">
+
+	    <input type="text" name="itemName" th:value="${orderSearchDto.itemName}" placeholder="상품명 입력">
+
+	    <button type="submit">조회</button>
+	</form>
     <table border="1">
         <thead>
         <tr>

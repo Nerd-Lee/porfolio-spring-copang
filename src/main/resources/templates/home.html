@@ -16,8 +16,14 @@
 		<a class="nav-link" href="/orders">주문 내역 관리</a>
 	</li>
 	<form action="/" method="get">
-	    <input type="text" name="searchQuery" placeholder="상품명을 입력하세요">
+	    <input type="text" name="searchQuery" th:value="${itemSearchDto.searchQuery}" placeholder="상품명을 입력하세요">
+		<input type="number" name="minPrice" th:value="${itemSearchDto.minPrice}" placeholder="최소 가격"> ~
+		<input type="number" name="maxPrice" th:value="${itemSearchDto.maxPrice}" placeholder="최대 가격">    
+		<label>
+			<input type="checkbox" name="onlyItemsInStock" th:checked="${itemSearchDto.onlyItemsInStock}" value="true"> 품절 제외
+		</label>
 	    <button type="submit">검색</button>
+		<a href="/" class="btn">초기화</a>
 	</form>
 	<div class="container" style="margin-top: 50px;">
 		<div class="py-5 text-center">

@@ -6,8 +6,10 @@ import java.util.List;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.ljm.copang.dto.ItemSearchDto;
 import com.ljm.copang.entity.Item;
 import com.ljm.copang.entity.Member;
 import com.ljm.copang.service.ItemService;
@@ -23,9 +25,9 @@ public class MainController {
 	
 	// 홈 화면
 	@GetMapping("/")
-	public String home(@RequestParam(value = "searchQuery", required = false) String searchQuery, HttpServletRequest request, Model model) {
+	public String home(@ModelAttribute("itemSearchDto") ItemSearchDto searchDto, HttpServletRequest request, Model model) {
 		// 물건의 정보를 전부 가져와서, model 객체에 넣어 전달
-		List<Item> items = itemService.searchItems(searchQuery);
+		List<Item> items = itemService.searchItems(searchDto);
 		
 		if(items == null) {
 			// 만약 items라는 리스트가 비어있다면, 에러를 막기 위해 빈 값이라도 넣어주자.
