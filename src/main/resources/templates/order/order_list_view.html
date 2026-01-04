@@ -32,6 +32,9 @@
                 </div>
             </td>
             <td th:text="${#temporals.format(order.orderDateTime, 'yyyy-MM-dd HH:mm')}">2023-10-27</td>
+			<td>
+				<a th:href="@{/orders/{id}(id=${order.id})}">상세보기</a>
+			</td>
             <td th:text="${order.status}">ORDER</td>
             <td>
                 <form th:if="${order.status.name() == 'ORDER'}" 

@@ -43,6 +43,37 @@ public class Order {
 	@Enumerated(EnumType.STRING)
 	private OrderStatus status;
 	
+	private String receiverName;
+	private String address;
+	private String phoneNumber;
+	private int totalPrice;
+	
+	// OrderItem 테이블과 연관관계 편의 메서드
+	public void addOrderItem(OrderItem orderItem) {
+		orderItems.add(orderItem);
+		orderItem.setOrder(this);
+	}
+	
+	// 주문 생성 메서드
+	public static Order createOrder(Member member, String receiverName, String address, String phoneNumber, List<OrderItem> orderItems) {
+		Order order = new Order();
+		order.setMember(member);
+		order.setReceiverName(receiverName);
+		order.setAddress(address);
+		order.setPhoneNumber(phoneNumber);
+		
+		int total = 0;
+		for(OrderItem oi : orderItems) {
+			order.addOrderItem(oi);
+			total += (oi.getOrderPrice() * oi.getCount());
+		}
+		order.setTotalPrice(total);
+		
+		order.setOrderDateTime(LocalDateTime.now());
+		order.setStatus(OrderStatus.ORDER);
+		return order;
+	}
+	
 	public void cancel() {
 		this.status = OrderStatus.CANCEL;
 		for(OrderItem orderItem : orderItems) {

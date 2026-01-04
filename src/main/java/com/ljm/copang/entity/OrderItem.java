@@ -42,4 +42,8 @@ public class OrderItem {
 	    // 주문했던 수량만큼 재고를 다시 더해줍니다.
 	    getItem().addStock(count);
 	}
+	
+	public int getTotalPrice() {
+		return getOrderPrice() * getCount();
+	}
 }
