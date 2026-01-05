@@ -62,8 +62,9 @@ public class CartService {
 		cartItemRepository.deleteById(cartItemId);
 	}
 	
-	// 장바구니 상품 전체 삭제
-	public void deleteCartAllItem() {
+	// 장바구니 상품 선택 삭제
+	public void deleteCartItems(List<Long> cartItemIds) {
+		cartItemRepository.deleteAllByIdInBatch(cartItemIds);
 	}
 	
 	// 장바구니 수량 변경

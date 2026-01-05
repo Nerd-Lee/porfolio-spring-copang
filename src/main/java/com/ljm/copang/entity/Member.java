@@ -46,4 +46,8 @@ public class Member {
 		member.name = form.getName();
 		return member;
 	}
+	
+	public void setPassword(String password) {
+		this.password = password;
+	}
 }

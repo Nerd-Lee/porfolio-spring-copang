@@ -71,10 +71,22 @@ public class CartController {
 		return "redirect:/cart";
 	}
 	
-	// 장바구니에 해당 상품 삭제
+	// 장바구니에 개별 상품 삭제
 	@PostMapping("/cart/item/{cartItemId}/delete")
 	public String deleteCartItem(@PathVariable Long cartItemId) {
 		cartService.deleteCartItem(cartItemId);
+		return "redirect:/cart";
+	}
+	
+	// 장바구니에서 선택 상품 삭제
+	@PostMapping("/cart/items/delete")
+	public String deleteSelectedItems(@RequestParam(value = "cartItemIds", required = false) List<Long> cartItemIds, HttpServletRequest request, RedirectAttributes redirectAttributes) {
+		if(cartItemIds == null || cartItemIds.isEmpty()) {
+			redirectAttributes.addFlashAttribute("errorMessage", "삭제할 상품을 선택하세요.");
+			return "redirect:/cart";
+		}
+		
+		cartService.deleteCartItems(cartItemIds);
 		return "redirect:/cart";
 	}
 	
@@ -86,14 +98,22 @@ public class CartController {
 	}
 	
 	@PostMapping("/cart/order/form")
-	public String cartOrderForm(HttpServletRequest request, Model model, RedirectAttributes redirectAttributes) {
+	public String cartOrderForm(@RequestParam(value = "cartItemIds", required=false)List<Long> cartItemIds, HttpServletRequest request, Model model, RedirectAttributes redirectAttributes) {
 		Member loginMember = sessionManager.getLoginMember(request);
 		if(loginMember == null) {
 			return "redirect:/login";
 		}
 		
-		Cart cart = cartRepository.findByMemberId(loginMember.getId());
-		List<CartItem> cartItems = cartItemRepository.findByCartId(cart.getId());
+		// 전체주문이 아니라 선택 주문이라면?
+		List<CartItem> cartItems;
+		if(cartItemIds == null || cartItemIds.isEmpty()) {
+			redirectAttributes.addFlashAttribute("errorMessage", "선택된 상품이 없습니다.");
+		    return "redirect:/cart";
+		}
+		else
+		{
+			cartItems = cartItemRepository.findAllById(cartItemIds); 
+		}
 		
 		if(cartItems.isEmpty()) {
 			return "redirect:/cart";
