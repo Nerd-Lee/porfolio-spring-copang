@@ -25,7 +25,18 @@ public class Review {
 	private Item item;
 	
 	private String content;					// 리뷰 내용
-	private String rating;					// 별점
+	private int rating;					// 별점
 	
 	private LocalDateTime createdTime;		// 생성된 시간
+	
+	// 리뷰 생성 메서드
+	public static Review createReview(Member member, Item item, String content, int rating) {
+		Review review = new Review();
+		review.setMember(member);
+		review.setItem(item);
+		review.setContent(content);
+		review.setRating(rating);
+		review.setCreatedTime(LocalDateTime.now());
+		return review;
+	}
 }

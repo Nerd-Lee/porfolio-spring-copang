@@ -1,54 +1,243 @@
+<!--
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 	<script src="/js/common.js"></script>
 	<script th:inline="javascript">
 		// 타임리프 변수를 안전하게 자바스크립트 인자로 전달
 		checkErrorMessage([[${errorMessage}]]);
+		function showTab(tabName) {
+	        // 모든 섹션 숨기기
+	        document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
+	        // 모든 탭 버튼 비활성화
+	        document.querySelectorAll('.tab-menu li').forEach(tab => tab.classList.remove('active'));
+	        
+	        // 선택한 섹션과 탭 활성화
+	        document.getElementById(tabName).classList.add('active');
+	        event.currentTarget.classList.add('active');
+	    }
 	</script>
+	<style>
+	    /* 간단한 탭 스타일 */
+	    .tab-menu { display: flex; list-style: none; padding: 0; border-bottom: 2px solid #ccc; }
+	    .tab-menu li { padding: 10px 20px; cursor: pointer; border: 1px solid transparent; margin-bottom: -2px; }
+	    .tab-menu li.active { border: 2px solid #ccc; border-bottom: 2px solid white; font-weight: bold; }
+	    .content-section { display: none; padding: 20px 0; }
+	    .content-section.active { display: block; }
+	</style>
 </head>
-<div class="container">
-    <h2>상품 상세</h2>
-    
-    <div th:if="${item.imageUrl}">
-        <img th:src="${item.imageUrl}" style="max-width: 300px; margin-bottom: 20px;" alt="상품이미지">
-    </div>
+<body>
+	<ul class="tab-menu">
+	    <li id="tab-desc" class="active" onclick="showTab('description')">상품 설명</li>
+	    <li id="tab-review" onclick="showTab('reviews')">상품 리뷰 (<span th:text="${item.reviewCount}">0</span>)</li>
+	</ul>
 
-    <div>
-        <label>상품명</label>
-        <input type="text" th:value="${item.name}" readonly>
-    </div>
-    <div>
-        <label>가격</label>
-        <input type="text" th:value="${item.price}" readonly>
-    </div>
-    <div>
-        <label>상품 설명</label>
-        <p th:text="${item.description}">상품 설명이 들어갑니다.</p>
-    </div>
-
-    <hr>
-
-	<form method="post">
-	    <input type="hidden" name="itemId" th:value="${item.id}">
+	<div id="description" class="content-section active">
+		<h2>상품 상세</h2>	    
+	    <div th:if="${item.imageUrl}">
+	        <img th:src="${item.imageUrl}" style="max-width: 300px; margin-bottom: 20px;" alt="상품이미지">
+	    </div>
 
 	    <div>
-	        <label for="count">구매 수량</label>
-	        <input type="number" name="count" id="count" value="1" min="1" required>
+	        <label>상품명</label>
+	        <input type="text" th:value="${item.name}" readonly>
 	    </div>
-
-	    <div style="margin-top: 20px;">
-	        <button type="submit" th:formaction="@{/cart/add}">장바구니 담기</button>
-	        <button type="submit" th:formaction="@{/order/form}">바로 구매하기</button>
+	    <div>
+	        <label>가격</label>
+	        <input type="text" th:value="${item.price}" readonly>
 	    </div>
-	</form>
+	    <div>
+	        <label>상품 설명</label>
+	        <p th:text="${item.description}">상품 설명이 들어갑니다.</p>
+	    </div>
+	</div>
 
-    <hr>
+	<div id="reviews" class="content-section">
+	    <h4>고객 리뷰</h4>
+	    <div th:if="${#lists.isEmpty(reviews)}">
+	        <p>작성된 리뷰가 없습니다. 첫 리뷰의 주인공이 되어보세요!</p>
+	    </div>
+	    
+	    <div th:each="review : ${reviews}" style="border-bottom: 1px solid #eee; padding: 15px 0;">
+	        <div>
+	            <span th:each="num : ${#numbers.sequence(1, review.rating)}" style="color: #f1c40f;">★</span>
+	            <strong th:text="${review.member.name}" style="margin-left: 10px;">작성자</strong>
+	            <small th:text="${#temporals.format(review.createdTime, 'yyyy-MM-dd')}" style="color: gray; float: right;"></small>
+	        </div>
+	        <div style="margin-top: 10px;">
+	            <p th:text="${review.content}">리뷰 내용</p>
+	        </div>
+	    </div>
+	</div>
+	
+	<div>
+		<form method="post">
+		    <input type="hidden" name="itemId" th:value="${item.id}">
 
-    <div style="margin-top: 10px;">
-        <div th:if="${session.loginMember != null and item.member != null and session.loginMember.id == item.member.id}">
-            <button th:onclick="|location.href='@{/items/{id}/edit(id=${item.id})}'|">수정하기</button>
+		    <div>
+		        <label for="count">구매 수량</label>
+		        <input type="number" name="count" id="count" value="1" min="1" required>
+		    </div>
+
+		    <div style="margin-top: 20px;">
+		        <button type="submit" th:formaction="@{/cart/add}">장바구니 담기</button>
+		        <button type="submit" th:formaction="@{/order/form}">바로 구매하기</button>
+		    </div>
+		</form>
+
+	    <hr>
+
+	    <div style="margin-top: 10px;">
+	        <div th:if="${session.loginMember != null and item.member != null and session.loginMember.id == item.member.id}">
+	            <button th:onclick="|location.href='@{/items/{id}/edit(id=${item.id})}'|">수정하기</button>
+	        </div>
+	        <button th:onclick="|location.href='@{/}'|">목록으로</button>
+	    </div>
+	</div>
+</body>
+</html>
+-->
+
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { background-color: #fff; font-family: 'Pretendard', sans-serif; color: #333; }
+        .container { max-width: 1050px; margin-top: 50px; }
+        
+        /* 상단 상품 요약 영역 */
+        .item-summary { display: flex; gap: 50px; margin-bottom: 50px; }
+        .item-image-side { flex: 1; }
+        .item-image-side img { width: 100%; border-radius: 8px; border: 1px solid #eee; }
+        .item-info-side { flex: 1; display: flex; flex-direction: column; }
+        
+        .item-name { font-size: 26px; font-weight: bold; margin-bottom: 10px; }
+        .item-rating-info { font-size: 14px; color: #0073e6; margin-bottom: 20px; text-decoration: none; }
+        .item-price-area { border-top: 1px solid #eee; border-bottom: 1px solid #eee; padding: 20px 0; margin-bottom: 20px; }
+        .item-price { font-size: 28px; font-weight: bold; color: #ae0000; }
+        
+        /* 구매 폼 스타일 */
+        .order-form { background: #f9f9f9; padding: 20px; border-radius: 8px; }
+        .btn-cart { background: #fff; border: 1px solid #0073e6; color: #0073e6; padding: 12px; width: 48%; font-weight: bold; }
+        .btn-order { background: #0073e6; border: none; color: #fff; padding: 12px; width: 48%; font-weight: bold; }
+        .btn-cart:hover { background: #f0f7ff; }
+
+        /* 탭 메뉴 스타일 */
+        .tab-container { margin-top: 40px; }
+        .tab-menu { display: flex; list-style: none; padding: 0; margin: 0; border-bottom: 2px solid #555; }
+        .tab-menu li { 
+            padding: 15px 40px; cursor: pointer; font-size: 16px; color: #666;
+            border: 1px solid #eee; border-bottom: none; margin-right: 5px; background: #fafafa;
+        }
+        .tab-menu li.active { background: #fff; color: #333; font-weight: bold; border: 2px solid #555; border-bottom: 2px solid #fff; margin-bottom: -2px; }
+        
+        .content-section { display: none; padding: 40px 10px; line-height: 1.6; }
+        .content-section.active { display: block; animation: fadein 0.3s; }
+        
+        @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+
+        /* 리뷰 리스트 스타일 */
+        .review-item { border-bottom: 1px solid #eee; padding: 20px 0; }
+        .review-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="item-summary">
+        <div class="item-image-side">
+            <img th:src="${item.imageUrl}" alt="상품이미지">
         </div>
-        <button th:onclick="|location.href='@{/}'|">목록으로</button>
+
+        <div class="item-info-side">
+            <h2 class="item-name" th:text="${item.name}">상품명</h2>
+            <a href="#reviews" class="item-rating-info" onclick="showTab('reviews')">
+                <span style="color: #f1c40f;"><i class="fas fa-star"></i></span>
+                <span th:text="${#numbers.formatDecimal(item.averageRating, 1, 1)}">0.0</span>
+                <span th:text="' | ' + ${item.reviewCount} + '개 상품평'"></span>
+            </a>
+
+            <div class="item-price-area">
+                <span class="item-price" th:text="${#numbers.formatInteger(item.price, 0, 'COMMA') + '원'}"></span>
+                <p style="color: #00891a; font-size: 14px; margin-top: 5px;"><i class="fas fa-truck"></i> 무료배송 (코팡 멤버십 기준)</p>
+            </div>
+
+            <form class="order-form" method="post">
+                <input type="hidden" name="itemId" th:value="${item.id}">
+                <div class="mb-3">
+                    <label for="count" class="form-label small fw-bold">수량 선택</label>
+                    <input type="number" name="count" id="count" class="form-control" value="1" min="1" style="width: 100px;">
+                </div>
+                <div class="d-flex justify-content-between">
+                    <button type="submit" th:formaction="@{/cart/add}" class="btn-cart">장바구니 담기</button>
+                    <button type="submit" th:formaction="@{/order/form}" class="btn-order">바로 구매하기</button>
+                </div>
+            </form>
+
+            <div class="mt-4 text-end">
+                <button th:if="${session.loginMember != null and item.member != null and session.loginMember.id == item.member.id}"
+                        th:onclick="|location.href='@{/items/{id}/edit(id=${item.id})}'|" 
+                        class="btn btn-sm btn-outline-secondary">상품 수정</button>
+                <button th:onclick="|location.href='@{/}'|" class="btn btn-sm btn-outline-dark">목록으로</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-container">
+        <ul class="tab-menu">
+            <li id="tab-desc-btn" class="active" onclick="showTab('description')">상품 상세설명</li>
+            <li id="tab-review-btn" onclick="showTab('reviews')">상품평 (<span th:text="${item.reviewCount}">0</span>)</li>
+        </ul>
+
+        <div id="description" class="content-section active">
+            <div style="white-space: pre-line;" th:text="${item.description}">
+                여기에 상품의 상세 설명이 들어갑니다.
+            </div>
+        </div>
+
+        <div id="reviews" class="content-section">
+            <h4 class="mb-4">고객 리뷰</h4>
+            <div th:if="${#lists.isEmpty(reviews)}" class="text-center py-5 text-muted">
+                <p>아직 작성된 리뷰가 없습니다.</p>
+            </div>
+            
+            <div th:each="review : ${reviews}" class="review-item">
+                <div class="review-header">
+                    <div>
+                        <span th:each="num : ${#numbers.sequence(1, review.rating)}" style="color: #f1c40f;"><i class="fas fa-star"></i></span>
+                        <strong th:text="${review.member.name}" class="ms-2"></strong>
+                    </div>
+                    <small th:text="${#temporals.format(review.createdTime, 'yyyy-MM-dd')}" style="color: #999;"></small>
+                </div>
+                <div class="review-body">
+                    <p th:text="${review.content}" style="color: #555;"></p>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+
+<script th:inline="javascript">
+    function showTab(tabName) {
+        document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
+        document.querySelectorAll('.tab-menu li').forEach(tab => tab.classList.remove('active'));
+        
+        document.getElementById(tabName).classList.add('active');
+        
+        if(tabName === 'description') {
+            document.getElementById('tab-desc-btn').classList.add('active');
+        } else {
+            document.getElementById('tab-review-btn').classList.add('active');
+        }
+    }
+    
+    /* 에러 메시지 처리 */
+    const errorMessage = [[${errorMessage}]];
+    if (errorMessage) {
+        alert(errorMessage);
+    }
+</script>
+</body>
 </html>

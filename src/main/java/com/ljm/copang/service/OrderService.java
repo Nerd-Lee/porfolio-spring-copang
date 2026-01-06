@@ -81,4 +81,10 @@ public class OrderService {
 		
 		order.cancel();
 	}
+	
+	@Transactional
+	public void compleateOrder(Long orderId) {
+		Order order = orderRepository.findById(orderId).get();
+		order.setStatus(OrderStatus.COMPLETED);
+	}
 }

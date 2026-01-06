@@ -141,4 +141,11 @@ public class OrderController {
 		
 		return "redirect:/orders";
 	}
+	
+	// 주문을 받았다는, 수취확인 버튼을 눌렀을 때 상태를 바꿔준다.
+	@PostMapping("/order/{id}/complete")
+	public String completeOrder(@PathVariable("id") Long orderId) {
+		orderService.compleateOrder(orderId);
+		return "redirect:/orders";
+	}
 }

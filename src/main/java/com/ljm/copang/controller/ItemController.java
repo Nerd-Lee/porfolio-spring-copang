@@ -13,7 +13,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.ljm.copang.component.SessionManager;
 import com.ljm.copang.entity.Item;
 import com.ljm.copang.entity.Member;
+import com.ljm.copang.entity.Review;
 import com.ljm.copang.repository.ItemRepository;
+import com.ljm.copang.service.ReviewService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -26,12 +28,16 @@ public class ItemController {
 	
 	private final ItemRepository itemRepository;
 	private final SessionManager sessionManager;
+	private final ReviewService reviewService;
 	
 	// 클릭 한 물건의 대한 상세 정보 item 상세페이지로 넘기기
 	@GetMapping("/items/{itemId}")
 	public String itemDetail(@PathVariable long itemId, Model model) {
 		Item item = itemRepository.findById(itemId).get();
+		
+		List<Review> reviews = reviewService.findReviewsByItem(itemId);
 		model.addAttribute("item", item);
+		model.addAttribute("reviews", reviews);
 		return "item/item_detail";
 	}
 	

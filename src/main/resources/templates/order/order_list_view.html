@@ -61,8 +61,21 @@
                       th:action="@{/orders/{id}/cancel(id=${order.id})}" method="post">
                     <button type="submit" onclick="return confirm('정말 취소하시겠습니까?')">주문취소</button>
                 </form>
+				<a th:if="${order.status.name() == 'COMPLETED'}" 
+		           th:href="@{/review/write(orderId=${order.id})}" class="btn btn-primary">
+		            리뷰 작성
+		        </a>
                 <span th:if="${order.status.name() == 'CANCEL'}">취소완료</span>
+				<span th:if="${order.status.name() == 'REVIEW_COMPLETED'}">리뷰작성 완료</span>
             </td>
+			<td>
+		        <form th:if="${order.status.name() == 'ORDER'}" 
+		              th:action="@{/order/{id}/complete(id=${order.id})}" method="post">
+		            <button type="submit" onclick="return confirm('물건을 잘 받으셨나요? 구매확정 후 리뷰 작성이 가능합니다.')">
+		                수취확인
+		            </button>
+		        </form>
+		    </td>
         </tr>
         </tbody>
     </table>

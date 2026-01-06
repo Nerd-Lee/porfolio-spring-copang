@@ -1,81 +1,232 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-	<meta charset="utf-8">
-	<link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <meta charset="utf-8">
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 	<style>
-		.container {
-			max-width: 800px;
+        body { background-color: #f4f5f7; font-family: 'Pretendard', sans-serif; }
+        
+		/* 1. 헤더 내부 컨테이너 구조 변경 */
+		.header .container {
+		    display: flex;
+		    flex-direction: column; /* 세로로 층을 쌓음 */
+		    align-items: stretch;
 		}
-	</style>
+
+		/* 2. 로고와 메뉴가 들어갈 첫 번째 줄 */
+		.header-top {
+		    display: flex;
+		    justify-content: space-between; /* 양 끝 정렬 */
+		    align-items: center;
+		    width: 100%;
+		}
+
+		/* 3. 검색창이 들어갈 두 번째 줄 */
+		.header-bottom {
+		    display: flex;
+		    justify-content: center; /* 검색창 중앙 정렬 */
+		    width: 100%;
+		    margin-top: 15px; /* 로고줄과의 간격 */
+		}
+
+		/* 검색창 너비 고정 해제 및 최적화 */
+		.search-wrapper {
+		    width: 100%;
+		    max-width: 600px; /* 너무 퍼지지 않게 최대치 제한 */
+		    margin: 0; 
+		    position: relative;
+		}
+
+		/* 기존 미디어 쿼리는 삭제하거나 아래처럼 단순화하세요 */
+		@media (max-width: 576px) {
+		    .nav-link span { display: none; } /* 모바일에서 아이콘만 */
+		    .logo { font-size: 22px; }
+		}
+        
+        /* 로고 스타일 */
+        .logo { font-size: 26px; font-weight: 800; color: #0073e6; text-decoration: none; letter-spacing: -1px; min-width: 120px; }
+        
+        /* 검색창 영역 */
+        .search-wrapper { flex-grow: 1; max-width: 100%; margin: 0 20px; position: relative; }
+        .search-bar { border: 2px solid #0073e6; border-radius: 4px; display: flex; overflow: hidden; background: #fff; }
+        .search-bar input { border: none; padding: 10px 15px; flex-grow: 1; outline: none; width: 100%; }
+        .search-bar .btn-search { background: #0073e6; color: #fff; border: none; padding: 0 20px; cursor: pointer; }
+        
+        /* 상세 필터 */
+        #filter-section { 
+            display: none; background: #fff; border: 1px solid #ddd; border-top: none;
+            padding: 15px; position: absolute; width: 100%; top: 100%; left: 0; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); border-radius: 0 0 8px 8px; z-index: 999;
+        }
+        .filter-toggle-btn { background: none; border: none; color: #666; font-size: 13px; margin-top: 5px; cursor: pointer; text-align: left; padding: 0; }
+
+        /* 메뉴 그룹 */
+        .nav-menu-group { display: flex; align-items: center; gap: 15px; }
+
+        /* 개별 메뉴 링크 */
+        .nav-link {
+            color: #333; font-size: 12px; text-decoration: none;
+            display: flex; flex-direction: column; align-items: center;
+            gap: 2px; min-width: 50px; white-space: nowrap;
+        }
+        .nav-link i { font-size: 18px; margin-bottom: 2px; }
+        .nav-link:hover, .nav-link:hover i { color: #0073e6; }
+
+        /* 상품 그리드 */
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; margin-top: 20px; }
+        .product-card { background: #fff; border-radius: 4px; border: 1px solid #eee; overflow: hidden; text-decoration: none; color: inherit; transition: 0.2s; }
+        .product-card:hover { border-color: #0073e6; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        .product-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; }
+        .product-info { padding: 12px; }
+
+        /* 📱 반응형 핵심 미디어 쿼리 */
+        @media (max-width: 991px) {
+            .header-container { flex-wrap: wrap !important; }
+            .logo { order: 1; }
+            .nav-menu-group { order: 2; }
+            .search-wrapper { order: 3; flex-basis: 100%; margin: 15px 0 5px 0; max-width: none; }
+        }
+
+        @media (max-width: 576px) {
+            .nav-link span { display: none; } /* 좁은 화면에서 텍스트 숨김 */
+            .nav-link i { font-size: 20px; }
+            .nav-menu-group { gap: 8px; }
+            .product-grid { grid-template-columns: repeat(2, 1fr); } /* 모바일은 무조건 한 줄에 2개 */
+        }
+    </style>
 </head>
 <body>
-	<li class="nav-item" th:if="${session.loginMember != null}">
-	    <a class="nav-link" href="/items/list/my">내 상품 관리</a>
-		<a class="nav-link" href="/cart">장바구니</a>
-		<a class="nav-link" href="/orders">주문 내역 관리</a>
-		<a class="nav-link" href="/members/password/edit">비밀번호 변경</a>
-	</li>
-	<form action="/" method="get">
-	    <input type="text" name="searchQuery" th:value="${itemSearchDto.searchQuery}" placeholder="상품명을 입력하세요">
-		<input type="number" name="minPrice" th:value="${itemSearchDto.minPrice}" placeholder="최소 가격"> ~
-		<input type="number" name="maxPrice" th:value="${itemSearchDto.maxPrice}" placeholder="최대 가격">    
-		<label>
-			<input type="checkbox" name="onlyItemsInStock" th:checked="${itemSearchDto.onlyItemsInStock}" value="true"> 품절 제외
-		</label>
-	    <button type="submit">검색</button>
-		<a href="/" class="btn">초기화</a>
-	</form>
-	<div class="container" style="margin-top: 50px;">
-		<div class="py-5 text-center">
-			<h2>🛍️ 코팡(Copang)</h2>
-		</div>
 
-		<div class="row mb-4">
-			<div th:if="${member == null}" class="col text-end">
-				<button class="btn btn-secondary" th:onclick="|location.href='@{/login}'|">로그인</button>
-				<button class="btn btn-primary" th:onclick="|location.href='@{/members/new}'|">회원 가입</button>
-			</div>
+	<!--
+<header class="header">
+    <div class="container d-flex align-items-center justify-content-between header-container">
+        
+        <a href="/" class="logo">KOPANG</a>
 
-			<div th:if="${member != null}" class="col text-end">
-				<span th:text="|${member.name}님 환영합니다! |" class="me-2">사용자 이름</span>
-				<button class="btn btn-info" th:onclick="|location.href='@{/item/add}'|">상품 등록</button>
-				<form th:action="@{/logout}" method="post" style="display:inline;">
-					<button class="btn btn-danger" type="submit">로그아웃</button>
-				</form>
-			</div>
-		</div>
-		<hr class="my-4">
-		<div class="row">
-			<h4>📦 판매 중인 상품</h4>
-			<table class="table table-striped">
-				<thead class="table-dark">
-					<tr>
-						<th>ID</th>
-						<th>이미지</th>
-						<th>상품명</th>
-						<th>가격</th>
-						<th>재고</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr th:each="item : ${items}">
-						<td th:text="${item.id}">1</td>
-						<td>
-							<img th:src="${item.imageUrl}" alt="상품 이미지" style="width:100px; height:100px;">
-						</td>
-						<td>
-							<a th:href="@{/items/{itemId}(itemId=${item.id})}" th:text="${item.name}">상품명</a>
-						</td>
-						<td th:text="${#numbers.formatInteger(item.price, 0, 'COMMA') + '원'}">10,000원</td>
-						<td th:text="${item.stockQuantity}">10개</td>
-					</tr>
-					<tr th:if="${#lists.isEmpty(items)}">
-						<td colspan="4" class="text-center">등록된 상품이 없습니다.</td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
-	</div>
+        <div class="nav-menu-group">
+            <th:block th:if="${session.loginMember != null}">
+                <a class="nav-link" href="/items/list/my"><i class="fas fa-tasks"></i><span>내상품관리</span></a>
+                <a class="nav-link" href="/item/add"><i class="fas fa-plus-circle"></i><span>상품등록</span></a>
+                <a class="nav-link" href="/cart"><i class="fas fa-shopping-cart"></i><span>장바구니</span></a>
+                <a class="nav-link" href="/orders"><i class="fas fa-box"></i><span>주문내역</span></a>
+                <a class="nav-link" href="/members/password/edit"><i class="fas fa-user-lock"></i><span>비밀번호</span></a>
+                <form th:action="@{/logout}" method="post" class="m-0">
+                    <button class="nav-link border-0 bg-transparent p-0" type="submit">
+                        <i class="fas fa-sign-out-alt"></i><span>로그아웃</span>
+                    </button>
+                </form>
+            </th:block>
+            <th:block th:if="${session.loginMember == null}">
+                <a class="nav-link" href="/login"><i class="fas fa-user"></i><span>로그인</span></a>
+                <a class="nav-link" href="/members/new"><i class="fas fa-user-plus"></i><span>회원가입</span></a>
+            </th:block>
+        </div>
+
+        <div class="search-wrapper">
+            <form action="/" method="get">
+                <div class="search-bar">
+                    <input type="text" name="searchQuery" th:value="${itemSearchDto.searchQuery}" placeholder="찾고 싶은 상품을 입력하세요">
+                    <button type="submit" class="btn-search"><i class="fas fa-search"></i></button>
+                </div>
+                <button type="button" class="filter-toggle-btn" onclick="toggleFilter()">
+                    <i class="fas fa-sliders-h"></i> 상세 검색 (가격/품절제외)
+                </button>
+
+                <div id="filter-section">
+                    <div class="row g-2 align-items-center">
+                        <div class="col-5"><input type="number" name="minPrice" th:value="${itemSearchDto.minPrice}" class="form-control form-control-sm" placeholder="최소"></div>
+                        <div class="col-1 text-center">~</div>
+                        <div class="col-5"><input type="number" name="maxPrice" th:value="${itemSearchDto.maxPrice}" class="form-control form-control-sm" placeholder="최대"></div>
+                        <div class="col-12 mt-2">
+                            <label class="small"><input type="checkbox" name="onlyItemsInStock" th:checked="${itemSearchDto.onlyItemsInStock}" class="form-check-input"> 품절 제외</label>
+                            <button type="submit" class="btn btn-primary btn-sm float-end">적용</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+    </div>
+</header>
+-->
+
+<header class="header">
+    <div class="container">
+        <div class="header-top">
+            <a href="/" class="logo">KOPANG</a>
+            
+            <div class="nav-menu-group">
+                <th:block th:if="${session.loginMember != null}">
+                    <a class="nav-link" href="/items/list/my"><i class="fas fa-tasks"></i><span>내상품관리</span></a>
+                    <a class="nav-link" href="/item/add"><i class="fas fa-plus-circle"></i><span>상품등록</span></a>
+                    <a class="nav-link" href="/cart"><i class="fas fa-shopping-cart"></i><span>장바구니</span></a>
+                    <a class="nav-link" href="/orders"><i class="fas fa-box"></i><span>주문내역</span></a>
+                    <a class="nav-link" href="/members/password/edit"><i class="fas fa-user-lock"></i><span>비밀번호</span></a>
+                    <form th:action="@{/logout}" method="post" style="display:inline; margin:0;">
+                        <button class="nav-link border-0 bg-transparent p-0" type="submit">
+                            <i class="fas fa-sign-out-alt"></i><span>로그아웃</span>
+                        </button>
+                    </form>
+                </th:block>
+                <th:block th:if="${session.loginMember == null}">
+                    <a class="nav-link" href="/login"><i class="fas fa-user"></i><span>로그인</span></a>
+                    <a class="nav-link" href="/members/new"><i class="fas fa-user-plus"></i><span>회원가입</span></a>
+                </th:block>
+            </div>
+        </div>
+
+        <div class="header-bottom">
+            <div class="search-wrapper">
+                <form action="/" method="get">
+                    <div class="search-bar">
+                        <input type="text" name="searchQuery" th:value="${itemSearchDto.searchQuery}" placeholder="찾고 싶은 상품을 입력하세요">
+                        <button type="submit" class="btn-search"><i class="fas fa-search"></i></button>
+                    </div>
+                    <button type="button" class="filter-toggle-btn" onclick="toggleFilter()">
+                        <i class="fas fa-sliders-h"></i> 상세 검색 (가격/품절제외)
+                    </button>
+
+                    <div id="filter-section">
+                        </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="container">
+    <div class="product-grid">
+        <a th:each="item : ${items}" th:href="@{/items/{itemId}(itemId=${item.id})}" class="product-card">
+            <img th:src="${item.imageUrl}" class="product-img">
+            <div class="product-info">
+                <div class="product-name" th:text="${item.name}">상품명</div>
+                <div class="product-price" th:text="${#numbers.formatInteger(item.price, 0, 'COMMA') + '원'}"></div>
+                <div class="product-rating mt-1">
+                    <span style="color: #f1c40f;"><i class="fas fa-star"></i></span>
+                    <span th:text="${#numbers.formatDecimal(item?.averageRating, 1, 1)}">0.0</span>
+                    <span style="color: #999; font-size: 12px;" th:text="'(' + ${item?.reviewCount} + ')'"></span>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+
+<script>
+    function toggleFilter() {
+        const filter = document.getElementById('filter-section');
+        filter.style.display = (filter.style.display === 'block') ? 'none' : 'block';
+    }
+    
+    // 필터 외부 클릭 시 닫기
+    window.onclick = function(event) {
+        const filter = document.getElementById('filter-section');
+        const btn = document.querySelector('.filter-toggle-btn');
+        if (!filter.contains(event.target) && event.target !== btn && !btn.contains(event.target)) {
+            filter.style.display = 'none';
+        }
+    }
+</script>
+
 </body>
 </html>

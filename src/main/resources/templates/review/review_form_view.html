@@ -1,0 +1,28 @@
+<div class="container">
+    <h2>리뷰 작성</h2>
+    <p>상품명: <span th:text="${reviewDto.itemName}"></span></p>
+
+    <form th:action="@{/review/new}" th:object="${reviewDto}" method="post">
+        <input type="hidden" th:field="*{itemId}">
+        <input type="hidden" th:field="*{orderId}">
+
+        <div>
+            <label>별점</label>
+            <select th:field="*{rating}">
+                <option value="5">⭐⭐⭐⭐⭐ (5점)</option>
+                <option value="4">⭐⭐⭐⭐ (4점)</option>
+                <option value="3">⭐⭐⭐ (3점)</option>
+                <option value="2">⭐⭐ (2점)</option>
+                <option value="1">⭐ (1점)</option>
+            </select>
+        </div>
+
+        <div style="margin-top: 10px;">
+            <label>내용</label>
+            <textarea th:field="*{content}" rows="5" style="width:100%;" placeholder="솔직한 후기를 남겨주세요!"></textarea>
+            <p th:if="${#fields.hasErrors('content')}" th:errors="*{content}" style="color:red;"></p>
+        </div>
+
+        <button type="submit" style="margin-top: 20px;">리뷰 등록하기</button>
+    </form>
+</div>

@@ -1,3 +1,4 @@
+<!--
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -41,5 +42,151 @@
         </div>
     </form>
 </div>
+</body>
+</html>
+-->
+
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { background-color: #f8f9fa; font-family: 'Pretendard', sans-serif; }
+        .container { max-width: 650px; margin-top: 60px; margin-bottom: 60px; }
+        
+        .form-wrapper {
+            background: #fff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+            border: 1px solid #eee;
+        }
+
+        h2 { font-weight: 800; color: #333; margin-bottom: 30px; letter-spacing: -1px; }
+        
+        .form-label { font-weight: 600; color: #555; font-size: 14px; margin-bottom: 8px; }
+        .form-control {
+            border-radius: 6px;
+            padding: 12px;
+            border: 1px solid #ddd;
+            transition: all 0.2s;
+        }
+        .form-control:focus {
+            border-color: #0073e6;
+            box-shadow: 0 0 0 3px rgba(0, 115, 230, 0.1);
+        }
+
+        /* 이미지 미리보기 박스 */
+        .img-preview-box {
+            width: 100%;
+            height: 200px;
+            background: #f1f3f5;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            overflow: hidden;
+            border: 2px dashed #dee2e6;
+        }
+        .img-preview-box img { width: 100%; height: 100%; object-fit: contain; }
+        .img-preview-box span { color: #adb5bd; font-size: 14px; }
+
+        .btn-save { background: #0073e6; border: none; padding: 14px; font-weight: bold; border-radius: 6px; }
+        .btn-save:hover { background: #005bb5; }
+        .btn-cancel { background: #f1f3f5; border: none; color: #495057; padding: 14px; font-weight: bold; border-radius: 6px; }
+        .btn-cancel:hover { background: #e9ecef; }
+        
+        hr { border-top: 1px solid #eee; margin: 30px 0; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="form-wrapper">
+        <div class="text-center mb-4">
+            <h2>새 상품 등록</h2>
+            <p class="text-muted small">구매자들에게 매력적인 상품을 등록해 보세요!</p>
+        </div>
+
+        <form th:action th:object="${item}" method="post">
+            <div class="img-preview-box" id="imgPreview">
+                <span th:if="*{imageUrl == null or imageUrl == ''}">이미지 URL을 입력하면 여기에 미리보기가 나타납니다.</span>
+                <img th:if="*{imageUrl != null and imageUrl != ''}" th:src="*{imageUrl}">
+            </div>
+
+            <div class="mb-3">
+                <label for="imageUrl" class="form-label">상품 이미지 URL</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light"><i class="fas fa-link"></i></span>
+                    <input type="text" id="imageUrl" th:field="*{imageUrl}" class="form-control" 
+                           placeholder="http://example.com/image.jpg" oninput="updatePreview(this.value)">
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="name" class="form-label">상품명</label>
+                <input type="text" id="name" th:field="*{name}" class="form-control" placeholder="상품명을 입력하세요">
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="price" class="form-label">가격 (원)</label>
+                    <div class="input-group">
+                        <input type="number" id="price" th:field="*{price}" class="form-control" placeholder="0">
+                        <span class="input-group-text">원</span>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="stockQuantity" class="form-label">재고 수량</label>
+                    <div class="input-group">
+                        <input type="number" id="stockQuantity" th:field="*{stockQuantity}" class="form-control" placeholder="0">
+                        <span class="input-group-text">개</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="description" class="form-label">상품 상세 설명</label>
+            </div>
+			<div>
+				<textarea id="description" th:field="*{description}" class="form-control" rows="5" 
+				                          placeholder="재질, 사이즈, 사용법 등 상세한 정보를 적어주세요."></textarea>
+			</div>
+
+            <hr>
+
+            <div class="row g-2">
+                <div class="col-8">
+                    <button class="w-100 btn btn-primary btn-save" type="submit">상품 등록하기</button>
+                </div>
+                <div class="col-4">
+                    <button class="w-100 btn btn-secondary btn-cancel" 
+                            th:onclick="|location.href='@{/}'|" type="button">취소</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // 이미지 URL 입력 시 미리보기 업데이트하는 함수
+    function updatePreview(url) {
+        const previewBox = document.getElementById('imgPreview');
+        if (url.trim() !== "") {
+            previewBox.innerHTML = `<img src="${url}" onerror="imgError(this)">`;
+        } else {
+            previewBox.innerHTML = `<span>이미지 URL을 입력하면 여기에 미리보기가 나타납니다.</span>`;
+        }
+    }
+
+    function imgError(image) {
+        image.onerror = null;
+        image.parentElement.innerHTML = `<span class="text-danger">잘못된 이미지 주소입니다.</span>`;
+    }
+</script>
+
 </body>
 </html>
