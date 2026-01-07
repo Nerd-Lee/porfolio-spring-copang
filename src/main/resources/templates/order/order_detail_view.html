@@ -1,3 +1,4 @@
+<!--
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head><title>주문 상세 내역</title></head>
@@ -46,5 +47,152 @@
 
     <hr>
     <button onclick="location.href='/orders'">목록으로 돌아가기</button>
+</body>
+</html>
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>주문 상세 내역 - KOPANG</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { background-color: #f4f5f7; font-family: 'Pretendard', sans-serif; color: #333; }
+        .container { max-width: 800px; margin-top: 50px; margin-bottom: 80px; }
+        
+        /* 주문 번호 및 상태 헤더 */
+        .order-header-box { background: #fff; border-radius: 12px; padding: 25px; border: 1px solid #eee; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; }
+        .order-info-title { font-size: 14px; color: #888; margin-bottom: 5px; }
+        .order-info-content { font-size: 18px; font-weight: 800; color: #333; }
+        
+		/* 배지 기본 스타일 */
+		.status-badge { 
+		    padding: 8px 16px; 
+		    border-radius: 50px; 
+		    font-weight: 700; 
+		    font-size: 14px; 
+		    display: inline-flex;
+		    align-items: center;
+		}
+
+		/* 상태별 색상 */
+		.status-ORDER { background: #e7f3ff; color: #0073e6; }       /* 파란색 */
+		.status-CANCEL { background: #fff0f0; color: #e03131; }      /* 빨간색 */
+		.status-COMPLETED { background: #ebfbee; color: #099268; }   /* 초록색 */
+
+		/* 리뷰 완료 전용 (연두색 계열) */
+		.status-REVIEW_COMPLETED { background: #f4fce3; color: #5c940d; border: 1px solid #d8f5a2; }
+
+        /* 섹션 카드 스타일 */
+        .detail-card { background: #fff; border-radius: 12px; border: 1px solid #eee; padding: 25px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+        .section-title { font-size: 17px; font-weight: 700; border-bottom: 2px solid #f1f1f1; padding-bottom: 12px; margin-bottom: 20px; display: flex; align-items: center; }
+        .section-title i { color: #0073e6; margin-right: 10px; }
+
+        /* 정보 테이블 (배송지 등) */
+        .info-table { width: 100%; border-collapse: collapse; }
+        .info-table th { width: 120px; font-size: 14px; color: #777; padding: 10px 0; font-weight: 600; text-align: left; vertical-align: top; }
+        .info-table td { padding: 10px 0; font-size: 15px; color: #333; font-weight: 500; }
+
+        /* 상품 목록 */
+        .item-row { display: flex; align-items: center; padding: 15px 0; border-bottom: 1px solid #f8f8f8; }
+        .item-row:last-child { border-bottom: none; }
+        .item-img { width: 70px; height: 70px; object-fit: cover; border-radius: 8px; border: 1px solid #eee; margin-right: 20px; }
+        .item-detail { flex-grow: 1; }
+        .item-name { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+        .item-price-qty { color: #666; font-size: 14px; }
+        .item-total { font-weight: 700; color: #333; text-align: right; min-width: 100px; }
+
+        /* 결제 요약 영역 */
+        .payment-summary { background: #fdfdfe; border-top: 2px solid #0073e6; padding: 20px; border-radius: 0 0 12px 12px; margin-top: 10px; }
+        .total-row { display: flex; justify-content: space-between; align-items: center; }
+        .total-label { font-size: 16px; font-weight: 700; }
+        .total-price { font-size: 24px; font-weight: 900; color: #ae0000; }
+
+        .btn-list { background: #fff; border: 1px solid #ddd; color: #555; padding: 12px 30px; border-radius: 8px; font-weight: 600; text-decoration: none; transition: 0.2s; }
+        .btn-list:hover { background: #f8f9fa; border-color: #bbb; color: #333; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2 class="text-center fw-bold mb-4">주문 상세 정보</h2>
+
+    <div class="order-header-box">
+        <div>
+            <div class="order-info-title">주문 일시 / 주문 번호</div>
+            <div class="order-info-content">
+                <span th:text="${#temporals.format(order.orderDateTime, 'yyyy-MM-dd HH:mm')}"></span>
+                <span class="text-muted ms-2 fw-normal" th:text="'#' + ${order.id}"></span>
+            </div>
+        </div>
+		<div class="d-flex align-items-center">
+		    <span th:if="${order.status.name() == 'ORDER'}" class="status-badge status-ORDER">
+		        <i class="fas fa-check-circle me-1"></i> 주문접수
+		    </span>
+
+		    <span th:if="${order.status.name() == 'CANCEL'}" class="status-badge status-CANCEL">
+		        <i class="fas fa-times-circle me-1"></i> 주문취소
+		    </span>
+
+		    <span th:if="${order.status.name() == 'COMPLETED'}" class="status-badge status-COMPLETED">
+		        <i class="fas fa-shipping-fast me-1"></i> 배송완료
+		    </span>
+
+		    <span th:if="${order.status.name() == 'REVIEW_COMPLETED'}" class="status-badge status-COMPLETED" style="background-color: #e9fac8; color: #5c940d;">
+		        <i class="fas fa-pen-fancy me-1"></i> 리뷰작성완료
+		    </span>
+		</div>
+    </div>
+
+    <div class="detail-card">
+        <div class="section-title"><i class="fas fa-map-marker-alt"></i>배송지 정보</div>
+        <table class="info-table">
+            <tr>
+                <th>받는 사람</th>
+                <td th:text="${order.receiverName}">홍길동</td>
+            </tr>
+            <tr>
+                <th>연락처</th>
+                <td th:text="${order.phoneNumber}">010-0000-0000</td>
+            </tr>
+            <tr>
+                <th>배송 주소</th>
+                <td th:text="${order.address}">서울시 강남구 테헤란로 123</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="detail-card">
+        <div class="section-title"><i class="fas fa-shopping-bag"></i>주문 상품 목록</div>
+        <div th:each="item : ${order.orderItems}" class="item-row">
+            <img th:src="${item.item.imageUrl}" class="item-img" alt="상품이미지">
+            <div class="item-detail">
+                <div class="item-name" th:text="${item.item.name}">상품명</div>
+                <div class="item-price-qty">
+                    <span th:text="${#numbers.formatInteger(item.orderPrice, 0, 'COMMA')} + '원'"></span>
+                    <span class="mx-1">/</span>
+                    <span th:text="${item.count} + '개'">1개</span>
+                </div>
+            </div>
+            <div class="item-total" th:text="${#numbers.formatInteger(item.totalPrice, 0, 'COMMA')} + '원'"></div>
+        </div>
+
+        <div class="payment-summary">
+            <div class="total-row">
+                <span class="total-label">최종 결제 금액</span>
+                <span class="total-price" th:text="${#numbers.formatInteger(order.totalPrice, 0, 'COMMA')} + '원'"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mt-5">
+        <a href="/orders" class="btn-list">
+            <i class="fas fa-list me-2"></i>주문 목록으로 돌아가기
+        </a>
+    </div>
+</div>
+
 </body>
 </html>

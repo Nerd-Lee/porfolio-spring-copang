@@ -1,3 +1,4 @@
+<!--
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <script src="/js/common.js"></script>
@@ -70,4 +71,170 @@
         </div>
     </form>
 </div>
+</html>
+-->
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>장바구니 - KOPANG</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="/js/common.js"></script>
+    <script src="/js/cart_list_view.js"></script>
+    <script th:inline="javascript">
+        checkErrorMessage([[${errorMessage}]]);
+		
+		function updateCartItem(cartItemId) {
+		    const countInput = document.getElementById('count-' + cartItemId);
+		    const hiddenForm = document.getElementById('updateHiddenForm');
+		    const hiddenCount = document.getElementById('hiddenCount');
+		    
+		    if (countInput.value < 1) {
+		        alert("수량은 1개 이상이어야 합니다.");
+		        return;
+		    }
+		    
+		    // 1. 전송할 수량 값을 숨겨진 input에 세팅
+		    hiddenCount.value = countInput.value;
+		    
+		    // 2. 해당 상품의 업데이트 경로로 action 설정
+		    hiddenForm.action = "/cart/item/" + cartItemId + "/update";
+		    
+		    // 3. 폼 전송 (이제 주문 폼과는 별개로 작동함)
+		    hiddenForm.submit();
+		}
+    </script>
+    <style>
+        body { background-color: #f4f5f7; font-family: 'Pretendard', sans-serif; color: #333; }
+        .container { max-width: 1000px; margin-top: 50px; margin-bottom: 80px; }
+        
+        .cart-header { font-weight: 800; font-size: 26px; margin-bottom: 30px; border-bottom: 3px solid #333; padding-bottom: 15px; }
+        
+        /* 테이블 헤더 커스텀 */
+        .cart-table-thead { background-color: #fafafa; border-bottom: 1px solid #ddd; }
+        .cart-table-thead th { padding: 15px; font-size: 14px; color: #666; font-weight: 600; text-align: center; }
+
+        /* 장바구니 아이템 카드 스타일 */
+        .cart-item-row { background: #fff; border-bottom: 1px solid #eee; transition: background 0.2s; }
+        .cart-item-row:hover { background: #f9f9f9; }
+        .cart-item-row td { padding: 20px 10px; vertical-align: middle; text-align: center; }
+
+        .item-img { width: 80px; height: 80px; object-fit: cover; border-radius: 4px; border: 1px solid #eee; }
+        .item-name { font-weight: 700; color: #333; text-decoration: none; font-size: 15px; }
+        
+        .price-text { font-weight: 600; font-size: 15px; }
+        .total-price-text { font-weight: 800; color: #ae0000; font-size: 16px; }
+
+        /* 수량 조절 폼 */
+        .count-input { width: 60px; padding: 5px; border: 1px solid #ddd; border-radius: 4px; text-align: center; font-weight: 600; }
+        .btn-update { background: #fff; border: 1px solid #0073e6; color: #0073e6; font-size: 12px; padding: 4px 8px; border-radius: 4px; font-weight: 600; }
+        .btn-update:hover { background: #0073e6; color: #fff; }
+
+        /* 삭제 버튼 */
+        .btn-delete { color: #ccc; background: none; border: none; font-size: 18px; transition: 0.2s; }
+        .btn-delete:hover { color: #ff4d4d; }
+
+        /* 결제 요약 영역 */
+        .summary-box { background: #fff; border: 2px solid #0073e6; padding: 30px; border-radius: 8px; margin-top: 30px; }
+        .summary-title { font-size: 18px; font-weight: 700; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .final-price { font-size: 28px; font-weight: 900; color: #ae0000; }
+
+        /* 버튼 그룹 */
+        .action-btns { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+        .btn-continue { background: #fff; border: 1px solid #333; color: #333; padding: 12px 25px; border-radius: 4px; font-weight: 600; text-decoration: none; }
+        .btn-order { background: #0073e6; border: none; color: #fff; padding: 12px 50px; border-radius: 4px; font-weight: 800; font-size: 18px; }
+        .btn-select-delete { background: #666; border: none; color: #fff; padding: 12px 20px; border-radius: 4px; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2 class="cart-header"><i class="fas fa-shopping-cart me-2"></i>내 장바구니</h2>
+    
+    <form th:action="@{/cart/order/form}" method="post" onsubmit="return validateOrder()">
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead class="cart-table-thead">
+                    <tr>
+                        <th style="width: 50px;"><input type="checkbox" id="checkAllBox" onclick="checkAll()" class="form-check-input"></th>
+                        <th colspan="2">상품정보</th>
+                        <th>상품금액</th>
+                        <th>수량</th>
+                        <th>합계금액</th>
+                        <th>삭제</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:if="${#lists.isEmpty(cartItems)}">
+                        <td colspan="7" class="py-5 text-center text-muted">
+                            <i class="fas fa-cart-arrow-down fa-3x mb-3"></i>
+                            <p class="fs-5">장바구니가 비어 있습니다.</p>
+                            <a href="/" class="btn btn-outline-primary mt-2">쇼핑하러 가기</a>
+                        </td>
+                    </tr>
+                    
+                    <tr th:each="cartItem : ${cartItems}" class="cart-item-row">
+                        <td>
+                            <input type="checkbox" name="cartItemIds" th:value="${cartItem.id}" onchange="updateOrderSum()" class="form-check-input">
+                        </td>
+                        <td style="width: 100px;">
+                            <img th:src="${cartItem.item.imageUrl}" class="item-img" alt="상품이미지">
+                        </td>
+                        <td class="text-start">
+                            <a th:href="@{/items/{id}(id=${cartItem.item.id})}" class="item-name" th:text="${cartItem.item.name}">상품명</a>
+                        </td>
+                        <td class="price-text" th:text="${#numbers.formatInteger(cartItem.item.price, 0, 'COMMA')} + '원'"></td>
+                        <td>
+							<div class="d-flex flex-column align-items-center gap-1">
+						        <input type="number" th:id="'count-' + ${cartItem.id}" 
+						               th:value="${cartItem.count}" min="1" class="count-input">
+						        <button type="button" class="btn-update" 
+						                th:onclick="updateCartItem([[${cartItem.id}]])">변경</button>
+						    </div>
+                        </td>
+                        <td class="total-price-text unitPrice" 
+                            th:data-price="${cartItem.item.price * cartItem.count}" 
+                            th:text="${#numbers.formatInteger(cartItem.item.price * cartItem.count, 0, 'COMMA')} + '원'">
+                        </td>
+                        <td>
+                            <form th:action="@{/cart/item/{id}/delete(id=${cartItem.id})}" method="post" class="m-0">
+                                <button type="submit" class="btn-delete" onclick="return confirm('장바구니에서 삭제하시겠습니까?')">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="summary-box">
+            <div class="row align-items-center text-center text-md-end">
+                <div class="col-md-8">
+                    <span class="summary-title d-block d-md-inline-block me-md-4 mb-2 mb-md-0">총 결제 예정 금액</span>
+                </div>
+                <div class="col-md-4">
+                    <span class="final-price" id="finalTotalPrice">0원</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-btns">
+            <a th:href="@{/}" class="btn-continue">쇼핑 계속하기</a>
+            
+            <button type="submit" th:formaction="@{/cart/items/delete}" 
+                    onclick="return confirm('선택한 상품을 장바구니에서 삭제하시겠습니까?')"
+                    class="btn-select-delete">선택상품 삭제</button>
+            
+            <button type="submit" th:if="${!#lists.isEmpty(cartItems)}" class="btn-order">주문하기</button>
+        </div>
+    </form>
+</div>
+<form id="updateHiddenForm" method="post" style="display:none;">
+    <input type="hidden" name="count" id="hiddenCount">
+</form>
+</body>
 </html>

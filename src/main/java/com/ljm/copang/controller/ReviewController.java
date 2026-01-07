@@ -36,6 +36,7 @@ public class ReviewController {
 		dto.setOrderId(orderId);
 		dto.setItemId(order.getOrderItems().get(0).getItem().getId());
 		dto.setItemName(order.getOrderItems().get(0).getItem().getName());
+		dto.setImageUrl(order.getOrderItems().get(0).getItem().getImageUrl());
 		
 		model.addAttribute("reviewDto", dto);
 		

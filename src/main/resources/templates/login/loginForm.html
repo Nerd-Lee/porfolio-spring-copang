@@ -1,3 +1,4 @@
+<!--
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -26,5 +27,133 @@
 
         <button type="submit">로그인</button>
     </form>
+</body>
+</html>
+-->
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>로그인 - KOPANG</title>
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { background-color: #f4f5f7; font-family: 'Pretendard', sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+        
+        .login-container { width: 100%; max-width: 400px; padding: 20px; }
+        
+        .login-card {
+            background: #fff;
+            padding: 40px 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            border: 1px solid #eee;
+        }
+
+        .login-logo {
+            font-size: 32px;
+            font-weight: 800;
+            color: #0073e6;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+            margin-bottom: 30px;
+            letter-spacing: -1.5px;
+        }
+
+		.form-group {
+	        margin-bottom: 20px;
+	        display: flex;
+	        flex-direction: column; /* 레이블을 위로, 인풋을 아래로 */
+	        align-items: flex-start; /* 왼쪽 정렬 고정 */
+	    }
+
+	    .form-label { 
+	        font-weight: 600; 
+	        color: #444; 
+	        font-size: 14px; 
+	        margin-bottom: 8px; /* 입력창과의 간격 동일하게 유지 */
+	        line-height: 1;
+	    }
+
+	    .form-control {
+	        width: 100%; /* 인풋창 너비를 부모에 꽉 차게 */
+	        padding: 12px 15px;
+	        border-radius: 8px;
+	        border: 1px solid #ddd;
+	        box-sizing: border-box; /* 패딩 때문에 너비가 변하지 않게 함 */
+	    }
+        
+        .form-control:focus {
+            border-color: #0073e6;
+            box-shadow: 0 0 0 3px rgba(0, 115, 230, 0.1);
+        }
+
+        .btn-login {
+            background-color: #0073e6;
+            border: none;
+            padding: 14px;
+            font-weight: bold;
+            font-size: 16px;
+            border-radius: 8px;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+        .btn-login:hover { background-color: #005bb5; }
+
+        .error-msg { font-size: 13px; color: #dc3545; margin-top: 5px; }
+        .global-error {
+            background-color: #fff5f5;
+            color: #dc3545;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 14px;
+            text-align: center;
+            margin-bottom: 20px;
+            border: 1px solid #feb2b2;
+        }
+
+        .login-footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+        .login-footer a { color: #0073e6; text-decoration: none; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+<div class="login-container">
+    <a href="/" class="login-logo">KOPANG</a>
+
+    <div class="login-card">
+        <h4 class="text-center fw-bold mb-4">로그인</h4>
+
+		<form th:action th:object="${loginForm}" method="post">
+		    
+		    <div class="form-group">
+		        <label for="email" class="form-label">이메일 주소</label>
+		        <input type="text" id="email" th:field="*{email}" class="form-control" placeholder="example@email.com">
+		        <p class="error-msg" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></p>
+		    </div>
+
+		    <div class="form-group">
+		        <label for="password" class="form-label">비밀번호</label>
+		        <input type="password" id="password" th:field="*{password}" class="form-control" placeholder="비밀번호를 입력하세요">
+		        <p class="error-msg" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></p>
+		    </div>
+
+		    <button type="submit" class="btn btn-primary w-100 btn-login">로그인</button>
+		</form>
+
+        <div class="login-footer">
+            아직 회원이 아니신가요? <a href="/members/new">회원가입</a>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>
