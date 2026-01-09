@@ -87,6 +87,18 @@
     <script th:inline="javascript">
         checkErrorMessage([[${errorMessage}]]);
 		
+		function checkAll() {
+	        const checkAllBox = document.getElementById('checkAllBox');
+	        const isChecked = checkAllBox.checked;
+	        const checkboxes = document.getElementsByName('cartItemIds');
+
+	        checkboxes.forEach((checkbox) => {
+	            checkbox.checked = isChecked;
+	        });
+
+	        updateOrderSum();
+	    }
+		
 		function updateCartItem(cartItemId) {
 		    const countInput = document.getElementById('count-' + cartItemId);
 		    const hiddenForm = document.getElementById('updateHiddenForm');

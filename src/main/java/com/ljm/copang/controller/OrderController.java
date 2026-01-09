@@ -50,6 +50,11 @@ public class OrderController {
 		return "order/order_list_view";
 	}
 	
+	@GetMapping("/order/form")
+	public String orderFormGetRedirect() {
+		return "redirect:/";
+	}
+	
 	@GetMapping("/orders/{orderId}")
 	public String orderDetail(@PathVariable("orderId") Long orderId, HttpServletRequest request, Model model) {
 		Member loginMember = sessionManager.getLoginMember(request);
