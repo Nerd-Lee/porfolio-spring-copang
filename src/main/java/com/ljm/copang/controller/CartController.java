@@ -24,6 +24,7 @@ import com.ljm.copang.service.CartService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
+// 장바구니 컨트롤러
 @Controller
 @RequiredArgsConstructor
 public class CartController {
@@ -32,28 +33,42 @@ public class CartController {
 	private final CartRepository cartRepository;
 	private final CartItemRepository cartItemRepository;
 	
+	// 장바구니 페이지 이동
 	@GetMapping("/cart")
 	public String cartList(HttpServletRequest request, Model model) {
+		/*
+		 * 로그인한 상태인 지 확인
+		 * 로그인 한 상태가 아니라면, 로그인 페이지로 redirect
+		 */
 		Member loginMember = sessionManager.getLoginMember(request);
-		
 		if(loginMember == null) {
 			return "redirect:/login";
 		}
 		
+		/* 
+		 * 로그인을 했다면, 로그인한 멤버의 장바구니의 정보를 Cart 객체에 대입
+		 * 장바구니에 저장되어 있는 아이템을 가져오기 위한 리스트를 생성
+		 */
 		Cart cart = cartRepository.findByMemberId(loginMember.getId());
 		List<CartItem> cartItems = new ArrayList<>();
 		
+		/*
+		 * 장바구니가 없다면, 아이템이 장바구니에 추가가 되어 있다는 말이기 때문에
+		 * 장바구니에 저장되어 있는 아이템을 리스트에 저장
+		 */
 		if(cart != null) {
 			cartItems = cartItemRepository.findByCartId(cart.getId());
 		}
 		
+		// 장바구니 아이템 리스트를 cart_list_view라는 html에 보낸다.
 		model.addAttribute("cartItems", cartItems);
 		
-		int totalPrice = cartItems.stream()
+		/*int totalPrice = cartItems.stream()
 						.mapToInt(ci -> ci.getItem().getPrice() * ci.getCount())
 						.sum();
 		
 		model.addAttribute("totalPrice", totalPrice);
+		*/
 		
 		return "cart/cart_list_view";
 	}
@@ -61,12 +76,16 @@ public class CartController {
 	// 카트에 상품 추가
 	@PostMapping("/cart/add")
 	public String addCart(@RequestParam Long itemId, @RequestParam int count, HttpServletRequest request) {
+		/*
+		 * 로그인한 상태인 지 확인
+		 * 로그인 한 상태가 아니라면, 로그인 페이지로 redirect
+		 */
 		Member loginMember = sessionManager.getLoginMember(request);
-		
 		if(loginMember == null) {
 			return "redirect:/login";
 		}
 		
+		// CartService 클래스에 있는 addCart라는 함수를 실행 후, 장바구니 페이지로 redirect 
 		cartService.addCart(loginMember, itemId, count);
 		return "redirect:/cart";
 	}
@@ -74,6 +93,7 @@ public class CartController {
 	// 장바구니에 개별 상품 삭제
 	@PostMapping("/cart/item/{cartItemId}/delete")
 	public String deleteCartItem(@PathVariable Long cartItemId) {
+		// CartService 클래스에 있는 deleteCartItem이라는 함수를 실행 후 장바구니 페이지로 redirect
 		cartService.deleteCartItem(cartItemId);
 		return "redirect:/cart";
 	}

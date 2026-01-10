@@ -118,6 +118,19 @@
 		    // 3. 폼 전송 (이제 주문 폼과는 별개로 작동함)
 		    hiddenForm.submit();
 		}
+		
+		function deleteCartItem(cartItemId) {
+		    if (!confirm('장바구니에서 삭제하시겠습니까?')) return;
+
+		    // 1. 임시 폼 생성
+		    const form = document.createElement('form');
+		    form.method = 'POST';
+		    form.action = '/cart/item/' + cartItemId + '/delete';
+
+		    // 2. 폼을 문서에 붙여서 전송
+		    document.body.appendChild(form);
+		    form.submit();
+		}
     </script>
     <style>
         body { background-color: #f4f5f7; font-family: 'Pretendard', sans-serif; color: #333; }
@@ -211,13 +224,21 @@
                             th:data-price="${cartItem.item.price * cartItem.count}" 
                             th:text="${#numbers.formatInteger(cartItem.item.price * cartItem.count, 0, 'COMMA')} + '원'">
                         </td>
+						<td>
+						    <button type="button" class="btn-delete" 
+						            th:onclick="deleteCartItem([[${cartItem.id}]])">
+						        <i class="fas fa-times"></i>
+						    </button>
+						</td>
+						<!--
                         <td>
-                            <form th:action="@{/cart/item/{id}/delete(id=${cartItem.id})}" method="post" class="m-0">
+                            <form th:action="@{/cart/item/{cartItemId}/delete(cartItemId=${cartItem.id})}" method="post" class="m-0">
                                 <button type="submit" class="btn-delete" onclick="return confirm('장바구니에서 삭제하시겠습니까?')">
                                     <i class="fas fa-times"></i>
                                 </button>
                             </form>
                         </td>
+						-->
                     </tr>
                 </tbody>
             </table>
